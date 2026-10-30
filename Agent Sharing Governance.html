@@ -1,0 +1,649 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Agent Sharing Governance</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field-manual reference — sticky contents rail on wide screens, one reading column, diagrams break out to full column width. Three admin planes each own a hue used consistently in every figure. */
+:root {
+  --bg: #f5f7f8;
+  --surface: #ffffff;
+  --ink: #16212b;
+  --muted: #56646f;
+  --line: #d8dfe4;
+  --accent: #0e6b6b;          /* Power Platform plane / primary */
+  --accent-soft: #dcefee;
+  --m365: #4c4fb0;            /* Microsoft 365 admin center plane */
+  --m365-soft: #e5e5f7;
+  --entra: #9a5b0c;           /* Entra plane */
+  --entra-soft: #f6ead8;
+  --warn: #b4361f;
+  --warn-soft: #f9e3de;
+  --ok: #2f7a3a;
+  --ok-soft: #e0f0e2;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f161c; --surface: #16202a; --ink: #e5ecf1; --muted: #9aa9b5; --line: #2b3a46;
+    --accent: #4fc2bd; --accent-soft: #143634; --m365: #9c9ff0; --m365-soft: #23244a;
+    --entra: #e3a752; --entra-soft: #3a2a12; --warn: #f08a72; --warn-soft: #3d1d16;
+    --ok: #79c886; --ok-soft: #173220; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f161c; --surface: #16202a; --ink: #e5ecf1; --muted: #9aa9b5; --line: #2b3a46;
+  --accent: #4fc2bd; --accent-soft: #143634; --m365: #9c9ff0; --m365-soft: #23244a;
+  --entra: #e3a752; --entra-soft: #3a2a12; --warn: #f08a72; --warn-soft: #3d1d16;
+  --ok: #79c886; --ok-soft: #173220; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 400 16px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, .mono { font-family: var(--font-mono); font-size: 0.88em; }
+code { background: var(--accent-soft); padding: 0.05em 0.35em; border-radius: 4px; }
+
+.shell { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 0; } .toc { display: none; } }
+
+.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-top: 40px; font-size: 14px; }
+.toc p { font: 600 11px/1 var(--font-body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.toc a { display: block; padding: 5px 12px; color: var(--muted); text-decoration: none; margin-left: -1px; border-left: 2px solid transparent; }
+.toc a:hover { color: var(--ink); border-left-color: var(--accent); }
+
+main { min-width: 0; }
+header.hero { padding-block: 48px 28px; border-bottom: 1px solid var(--line); }
+.eyebrow { font: 600 12px/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+h1 { font: 700 clamp(34px, 5.2vw, 56px)/1.04 var(--font-display); letter-spacing: -0.02em; margin: 0 0 18px; text-wrap: balance; }
+.lede { font-size: 19px; color: var(--muted); max-width: 64ch; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; font-size: 13px; color: var(--muted); }
+.meta span strong { color: var(--ink); font-weight: 600; }
+
+section { padding-block: 44px 8px; scroll-margin-top: 16px; }
+h2 { font: 700 clamp(24px, 3vw, 31px)/1.15 var(--font-display); letter-spacing: -0.01em; margin: 0 0 10px; text-wrap: balance; }
+h3 { font: 600 18px/1.3 var(--font-body); margin: 28px 0 8px; }
+.sec-num { font: 500 13px/1 var(--font-mono); color: var(--muted); display: block; margin-bottom: 10px; }
+section > p, .prose p { max-width: 68ch; }
+.kicker { color: var(--muted); max-width: 68ch; margin-top: 0; }
+
+figure { margin: 24px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+figcaption { font-size: 13.5px; color: var(--muted); margin-top: 14px; max-width: 80ch; }
+figcaption strong { color: var(--ink); }
+.scroll-x { overflow-x: auto; }
+svg text { font-family: var(--font-body); }
+
+/* SVG paint classes, all token driven */
+.f-surface { fill: var(--surface); } .f-bg { fill: var(--bg); }
+.f-pp { fill: var(--accent); } .f-pp-soft { fill: var(--accent-soft); }
+.f-m365 { fill: var(--m365); } .f-m365-soft { fill: var(--m365-soft); }
+.f-entra { fill: var(--entra); } .f-entra-soft { fill: var(--entra-soft); }
+.f-warn { fill: var(--warn); } .f-warn-soft { fill: var(--warn-soft); }
+.f-ok { fill: var(--ok); } .f-ok-soft { fill: var(--ok-soft); }
+.s-line { stroke: var(--line); } .s-muted { stroke: var(--muted); } .s-pp { stroke: var(--accent); }
+.s-m365 { stroke: var(--m365); } .s-entra { stroke: var(--entra); } .s-warn { stroke: var(--warn); } .s-ok { stroke: var(--ok); }
+.t-ink { fill: var(--ink); } .t-muted { fill: var(--muted); } .t-onfill { fill: var(--surface); }
+.t-pp { fill: var(--accent); } .t-m365 { fill: var(--m365); } .t-entra { fill: var(--entra); } .t-warn { fill: var(--warn); } .t-ok { fill: var(--ok); }
+
+/* Callouts */
+.key { margin: 22px 0; padding: 16px 18px; border-radius: 8px; background: var(--accent-soft); max-width: 78ch; }
+.key strong { color: var(--accent); }
+.warnbox { background: var(--warn-soft); }
+.warnbox strong { color: var(--warn); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+th { font: 600 12px/1.3 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; min-width: 170px; }
+.pill { display: inline-block; font: 600 11.5px/1 var(--font-body); padding: 4px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.inc { background: var(--ok-soft); color: var(--ok); }
+.pill.lic { background: var(--entra-soft); color: var(--entra); }
+.pill.pp { background: var(--accent-soft); color: var(--accent); }
+.pill.m365 { background: var(--m365-soft); color: var(--m365); }
+.pill.entra { background: var(--entra-soft); color: var(--entra); }
+
+/* Plane legend */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+/* Gotchas */
+.gotchas { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.gotchas li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+.gotchas b { display: block; font: 600 15.5px/1.35 var(--font-body); margin-bottom: 6px; }
+.gotchas p { margin: 0; font-size: 14.5px; color: var(--muted); }
+.gotchas .src { display: block; margin-top: 8px; font-size: 12.5px; }
+
+/* Simulator */
+.sim { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; }
+@media (max-width: 720px) { .sim { grid-template-columns: minmax(0, 1fr); } }
+.sim fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; }
+.sim legend { font: 600 12px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.toggle { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14.5px; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); }
+.toggle small { display: block; color: var(--muted); font-size: 12.5px; }
+.toggle.disabled { opacity: 0.45; cursor: not-allowed; }
+.cap { display: flex; align-items: center; gap: 10px; font-size: 14px; padding-left: 30px; }
+.cap input { width: 80px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: 500 14px var(--font-mono); }
+.cap input:disabled { opacity: 0.45; }
+.results { display: grid; gap: 8px; }
+.res { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--bg); font-size: 14.5px; }
+.res .v { font: 600 12.5px/1 var(--font-body); padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+.v.yes { background: var(--ok-soft); color: var(--ok); }
+.v.no { background: var(--warn-soft); color: var(--warn); }
+.v.unk { background: var(--entra-soft); color: var(--entra); }
+.sim-note { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+
+/* Steps */
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 10px; max-width: 80ch; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; }
+.steps li::before { content: counter(s); font: 600 14px/34px var(--font-mono); text-align: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+.steps li > div { padding-top: 5px; }
+
+.sources { columns: 2 300px; column-gap: 32px; font-size: 14px; padding-left: 18px; }
+.sources li { break-inside: avoid; margin-bottom: 6px; }
+footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .res .v { transition: background-color 0.2s, color 0.2s; }
+}
+</style>
+
+<div class="shell">
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#planes">Three control planes</a></li>
+      <li><a href="#systems">Two sharing systems</a></li>
+      <li><a href="#gates">The access gates</a></li>
+      <li><a href="#ppac">Power Platform controls</a></li>
+      <li><a href="#simulator">Sharing rules simulator</a></li>
+      <li><a href="#m365">Microsoft 365 controls</a></li>
+      <li><a href="#entra">Entra Agent ID</a></li>
+      <li><a href="#retro">Rules aren't retroactive</a></li>
+      <li><a href="#gotchas">Gotchas</a></li>
+      <li><a href="#zones">Zoned operating model</a></li>
+      <li><a href="#runbook">Runbook</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Power Platform admin reference</p>
+      <h1>Governing how agents are shared</h1>
+      <p class="lede">Who can share an agent, who can find it, who can run it, and whose identity it acts as are decided in three different admin centers. This page maps every control Microsoft documents today and shows how they stack.</p>
+      <div class="meta">
+        <span><strong>Basis:</strong> Microsoft Learn, current as of late October 2026</span>
+        <span><strong>Covers:</strong> Copilot Studio, Agent Builder, Agent 365, Entra Agent ID</span>
+        <span><strong>Audience:</strong> Power Platform, AI, and Global administrators</span>
+      </div>
+    </header>
+
+    <!-- 1. Planes -->
+    <section id="planes">
+      <span class="sec-num">01</span>
+      <h2>Three control planes</h2>
+      <p class="kicker">Each admin center answers a different question. No single one can lock an agent down on its own.</p>
+      <figure>
+        <div class="scroll-x">
+          <svg viewBox="0 0 900 360" width="100%" style="min-width:640px" role="img" aria-labelledby="planes-t planes-d">
+            <title id="planes-t">Three control planes for agent sharing</title>
+            <desc id="planes-d">Power Platform admin center governs where agents are built and how makers share them. Microsoft 365 admin center governs who can find and use agents. Microsoft Entra governs the agent's own identity and access.</desc>
+            <!-- columns -->
+            <g>
+              <rect x="10" y="10" width="280" height="340" rx="10" class="f-pp-soft"/>
+              <rect x="10" y="10" width="280" height="54" rx="10" class="f-pp"/>
+              <rect x="10" y="44" width="280" height="20" class="f-pp"/>
+              <text x="30" y="36" class="t-onfill" font-size="15" font-weight="600">Power Platform admin center</text>
+              <text x="30" y="55" class="t-onfill" font-size="12">Where agents are built</text>
+              <text x="30" y="96" class="t-pp" font-size="12" font-weight="600" letter-spacing="1">ANSWERS</text>
+              <text x="30" y="118" class="t-ink" font-size="14">Who may a maker share with?</text>
+              <text x="30" y="150" class="t-pp" font-size="12" font-weight="600" letter-spacing="1">KEY CONTROLS</text>
+              <text x="30" y="174" class="t-ink" font-size="13.5">• Sharing limits (Managed Env)</text>
+              <text x="30" y="198" class="t-ink" font-size="13.5">• Environment-group rules</text>
+              <text x="30" y="222" class="t-ink" font-size="13.5">• Environment security group</text>
+              <text x="30" y="246" class="t-ink" font-size="13.5">• Data policies for agents</text>
+              <text x="30" y="270" class="t-ink" font-size="13.5">• Advanced connector policies</text>
+              <text x="30" y="294" class="t-ink" font-size="13.5">• Quarantine API</text>
+              <text x="30" y="330" class="t-muted" font-size="12">Copilot Studio agents</text>
+            </g>
+            <g>
+              <rect x="310" y="10" width="280" height="340" rx="10" class="f-m365-soft"/>
+              <rect x="310" y="10" width="280" height="54" rx="10" class="f-m365"/>
+              <rect x="310" y="44" width="280" height="20" class="f-m365"/>
+              <text x="330" y="36" class="t-onfill" font-size="15" font-weight="600">Microsoft 365 admin center</text>
+              <text x="330" y="55" class="t-onfill" font-size="12">Where agents are used</text>
+              <text x="330" y="96" class="t-m365" font-size="12" font-weight="600" letter-spacing="1">ANSWERS</text>
+              <text x="330" y="118" class="t-ink" font-size="14">Who can find and run it?</text>
+              <text x="330" y="150" class="t-m365" font-size="12" font-weight="600" letter-spacing="1">KEY CONTROLS</text>
+              <text x="330" y="174" class="t-ink" font-size="13.5">• User access (tenant gate)</text>
+              <text x="330" y="198" class="t-ink" font-size="13.5">• Per-agent availability</text>
+              <text x="330" y="222" class="t-ink" font-size="13.5">• Publish requests (approve)</text>
+              <text x="330" y="246" class="t-ink" font-size="13.5">• Block · delete · reassign</text>
+              <text x="330" y="270" class="t-ink" font-size="13.5">• Agent Builder sharing</text>
+              <text x="330" y="294" class="t-ink" font-size="13.5">• Agent management rules</text>
+              <text x="330" y="330" class="t-muted" font-size="12">All agents, every builder</text>
+            </g>
+            <g>
+              <rect x="610" y="10" width="280" height="340" rx="10" class="f-entra-soft"/>
+              <rect x="610" y="10" width="280" height="54" rx="10" class="f-entra"/>
+              <rect x="610" y="44" width="280" height="20" class="f-entra"/>
+              <text x="630" y="36" class="t-onfill" font-size="15" font-weight="600">Microsoft Entra</text>
+              <text x="630" y="55" class="t-onfill" font-size="12">Who the agent is</text>
+              <text x="630" y="96" class="t-entra" font-size="12" font-weight="600" letter-spacing="1">ANSWERS</text>
+              <text x="630" y="118" class="t-ink" font-size="14">What can the agent reach?</text>
+              <text x="630" y="150" class="t-entra" font-size="12" font-weight="600" letter-spacing="1">KEY CONTROLS</text>
+              <text x="630" y="174" class="t-ink" font-size="13.5">• Entra Agent ID per agent</text>
+              <text x="630" y="198" class="t-ink" font-size="13.5">• Conditional Access for agents</text>
+              <text x="630" y="222" class="t-ink" font-size="13.5">• Sponsors and owners</text>
+              <text x="630" y="246" class="t-ink" font-size="13.5">• Access packages (time-bound)</text>
+              <text x="630" y="270" class="t-ink" font-size="13.5">• ID Protection risk signals</text>
+              <text x="630" y="294" class="t-ink" font-size="13.5">• User Conditional Access</text>
+              <text x="630" y="330" class="t-muted" font-size="12">Agent identities (preview)</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><strong>Read it left to right:</strong> makers share in Copilot Studio, users find and run agents in Microsoft 365, and the agent's own identity reaches resources through Entra. A gap in any one plane leaves a path open.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 2. Systems -->
+    <section id="systems">
+      <span class="sec-num">02</span>
+      <h2>Two separate sharing systems</h2>
+      <p class="kicker">Microsoft states that the Microsoft 365 sharing control "only applies to agents built with Microsoft Copilot Agent Builder", and that it is different from the Power Platform sharing limit. Setting one does nothing to the other.</p>
+      <figure>
+        <div class="scroll-x">
+          <svg viewBox="0 0 900 300" width="100%" style="min-width:640px" role="img" aria-labelledby="sys-t sys-d">
+            <title id="sys-t">Copilot Studio and Agent Builder sharing paths</title>
+            <desc id="sys-d">Copilot Studio agents are shared as Viewer or Editor and governed by Power Platform sharing limits. Agent Builder agents are shared as Can chat or Can edit and governed by Microsoft 365 Sharing settings. Both flow into the Microsoft 365 Agent Registry where admins can block them.</desc>
+            <defs>
+              <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="f-pp"/></marker>
+              <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="f-m365"/></marker>
+            </defs>
+            <!-- Copilot Studio lane -->
+            <rect x="10" y="20" width="200" height="100" rx="10" class="f-surface s-pp" stroke-width="1.5"/>
+            <text x="30" y="52" class="t-ink" font-size="15" font-weight="600">Copilot Studio agent</text>
+            <text x="30" y="74" class="t-muted" font-size="12.5">Lives in a Dataverse</text>
+            <text x="30" y="92" class="t-muted" font-size="12.5">environment</text>
+            <line x1="210" y1="70" x2="300" y2="70" class="s-pp" stroke-width="1.5" marker-end="url(#arr)"/>
+            <rect x="300" y="20" width="250" height="100" rx="10" class="f-pp-soft"/>
+            <text x="318" y="46" class="t-pp" font-size="12" font-weight="600" letter-spacing="1">MAKER SHARES AS</text>
+            <text x="318" y="70" class="t-ink" font-size="13.5"><tspan font-weight="600">Viewer</tspan> · individuals, groups, Everyone</text>
+            <text x="318" y="94" class="t-ink" font-size="13.5"><tspan font-weight="600">Editor</tspan> · individuals only</text>
+            <line x1="550" y1="70" x2="640" y2="70" class="s-pp" stroke-width="1.5" marker-end="url(#arr)"/>
+            <rect x="640" y="20" width="250" height="100" rx="10" class="f-pp"/>
+            <text x="658" y="46" class="t-onfill" font-size="12" font-weight="600" letter-spacing="1">GOVERNED BY</text>
+            <text x="658" y="70" class="t-onfill" font-size="14" font-weight="600">PPAC sharing limits</text>
+            <text x="658" y="94" class="t-onfill" font-size="12.5">Managed Environment or group rule</text>
+            <!-- Agent Builder lane -->
+            <rect x="10" y="150" width="200" height="100" rx="10" class="f-surface s-m365" stroke-width="1.5"/>
+            <text x="30" y="182" class="t-ink" font-size="15" font-weight="600">Agent Builder agent</text>
+            <text x="30" y="204" class="t-muted" font-size="12.5">Built inside Microsoft 365</text>
+            <text x="30" y="222" class="t-muted" font-size="12.5">Copilot, no environment</text>
+            <line x1="210" y1="200" x2="300" y2="200" class="s-m365" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <rect x="300" y="150" width="250" height="100" rx="10" class="f-m365-soft"/>
+            <text x="318" y="176" class="t-m365" font-size="12" font-weight="600" letter-spacing="1">MAKER SHARES AS</text>
+            <text x="318" y="200" class="t-ink" font-size="13.5"><tspan font-weight="600">Can chat</tspan> · individuals, groups, org</text>
+            <text x="318" y="224" class="t-ink" font-size="13.5"><tspan font-weight="600">Can edit</tspan> · individuals only (owner)</text>
+            <line x1="550" y1="200" x2="640" y2="200" class="s-m365" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <rect x="640" y="150" width="250" height="100" rx="10" class="f-m365"/>
+            <text x="658" y="176" class="t-onfill" font-size="12" font-weight="600" letter-spacing="1">GOVERNED BY</text>
+            <text x="658" y="200" class="t-onfill" font-size="14" font-weight="600">M365 Agents › Sharing</text>
+            <text x="658" y="224" class="t-onfill" font-size="12.5">All · specific users · no users</text>
+            <text x="450" y="286" text-anchor="middle" class="t-muted" font-size="12.5">Both appear in the Microsoft 365 Agent Registry, where admins can block, delete, or scope availability.</text>
+          </svg>
+        </div>
+        <figcaption><strong>Groups can never be editors or owners</strong> in either system. Editor (Copilot Studio) and Can edit (Agent Builder) go to individual users only.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 3. Gates -->
+    <section id="gates">
+      <span class="sec-num">03</span>
+      <h2>The access gates a chat request passes</h2>
+      <p class="kicker">A user reaches a Copilot Studio agent only if every gate allows it. Environment access and sharing are separate controls: sharing an agent doesn't get anyone past the environment's security group, and group membership doesn't grant access to any particular agent.</p>
+      <figure>
+        <div class="scroll-x">
+          <svg viewBox="0 0 900 270" width="100%" style="min-width:760px" role="img" aria-labelledby="gate-t gate-d">
+            <title id="gate-t">Access gates in order</title>
+            <desc id="gate-d">Nine gates: tenant user access, agent availability, Conditional Access, environment security group, security role with ChatBotReaders, agent authentication, agent sharing, data and connector policies at runtime, and tool connection identity.</desc>
+            <defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="f-bg" style="fill:var(--muted)"/></marker></defs>
+            <text x="10" y="22" class="t-muted" font-size="12" font-weight="600" letter-spacing="1">USER</text>
+            <line x1="10" y1="34" x2="890" y2="34" class="s-line" stroke-width="1"/>
+            <!-- 9 gates, 96px pitch -->
+            <g font-size="12">
+              <g transform="translate(10,50)"><rect width="86" height="150" rx="8" class="f-m365-soft"/><rect width="86" height="6" rx="3" class="f-m365"/><text x="10" y="30" class="t-m365" font-weight="700" font-size="20">1</text><text x="10" y="58" class="t-ink" font-weight="600">Tenant</text><text x="10" y="74" class="t-ink" font-weight="600">user access</text><text x="10" y="100" class="t-muted" font-size="11">All · none ·</text><text x="10" y="114" class="t-muted" font-size="11">specific groups</text></g>
+              <g transform="translate(106,50)"><rect width="86" height="150" rx="8" class="f-m365-soft"/><rect width="86" height="6" rx="3" class="f-m365"/><text x="10" y="30" class="t-m365" font-weight="700" font-size="20">2</text><text x="10" y="58" class="t-ink" font-weight="600">Agent</text><text x="10" y="74" class="t-ink" font-weight="600">availability</text><text x="10" y="100" class="t-muted" font-size="11">Available to ·</text><text x="10" y="114" class="t-muted" font-size="11">blocked?</text></g>
+              <g transform="translate(202,50)"><rect width="86" height="150" rx="8" class="f-entra-soft"/><rect width="86" height="6" rx="3" class="f-entra"/><text x="10" y="30" class="t-entra" font-weight="700" font-size="20">3</text><text x="10" y="58" class="t-ink" font-weight="600">Conditional</text><text x="10" y="74" class="t-ink" font-weight="600">Access</text><text x="10" y="100" class="t-muted" font-size="11">Token blocked =</text><text x="10" y="114" class="t-muted" font-size="11">no response</text></g>
+              <g transform="translate(298,50)"><rect width="86" height="150" rx="8" class="f-pp-soft"/><rect width="86" height="6" rx="3" class="f-pp"/><text x="10" y="30" class="t-pp" font-weight="700" font-size="20">4</text><text x="10" y="58" class="t-ink" font-weight="600">Environment</text><text x="10" y="74" class="t-ink" font-weight="600">security grp</text><text x="10" y="100" class="t-muted" font-size="11">Not available on</text><text x="10" y="114" class="t-muted" font-size="11">the default env</text></g>
+              <g transform="translate(394,50)"><rect width="86" height="150" rx="8" class="f-pp-soft"/><rect width="86" height="6" rx="3" class="f-pp"/><text x="10" y="30" class="t-pp" font-weight="700" font-size="20">5</text><text x="10" y="58" class="t-ink" font-weight="600">Security</text><text x="10" y="74" class="t-ink" font-weight="600">role</text><text x="10" y="100" class="t-muted" font-size="11">Needs the</text><text x="10" y="114" class="t-muted" font-size="11">ChatBotReaders</text><text x="10" y="128" class="t-muted" font-size="11">privilege</text></g>
+              <g transform="translate(490,50)"><rect width="86" height="150" rx="8" class="f-pp-soft"/><rect width="86" height="6" rx="3" class="f-pp"/><text x="10" y="30" class="t-pp" font-weight="700" font-size="20">6</text><text x="10" y="58" class="t-ink" font-weight="600">Agent</text><text x="10" y="74" class="t-ink" font-weight="600">sign-in</text><text x="10" y="100" class="t-muted" font-size="11">"None" skips</text><text x="10" y="114" class="t-muted" font-size="11">gates 7 and</text><text x="10" y="128" class="t-muted" font-size="11">sharing rules</text></g>
+              <g transform="translate(586,50)"><rect width="86" height="150" rx="8" class="f-pp-soft"/><rect width="86" height="6" rx="3" class="f-pp"/><text x="10" y="30" class="t-pp" font-weight="700" font-size="20">7</text><text x="10" y="58" class="t-ink" font-weight="600">Agent</text><text x="10" y="74" class="t-ink" font-weight="600">sharing</text><text x="10" y="100" class="t-muted" font-size="11">Owner · Viewer ·</text><text x="10" y="114" class="t-muted" font-size="11">Editor · Everyone</text></g>
+              <g transform="translate(682,50)"><rect width="86" height="150" rx="8" class="f-pp-soft"/><rect width="86" height="6" rx="3" class="f-pp"/><text x="10" y="30" class="t-pp" font-weight="700" font-size="20">8</text><text x="10" y="58" class="t-ink" font-weight="600">Data and</text><text x="10" y="74" class="t-ink" font-weight="600">connector</text><text x="10" y="90" class="t-ink" font-weight="600">policies</text><text x="10" y="114" class="t-muted" font-size="11">Enforced at</text><text x="10" y="128" class="t-muted" font-size="11">runtime</text></g>
+              <g transform="translate(778,50)"><rect width="112" height="150" rx="8" class="f-warn-soft"/><rect width="112" height="6" rx="3" class="f-warn"/><text x="10" y="30" class="t-warn" font-weight="700" font-size="20">9</text><text x="10" y="58" class="t-ink" font-weight="600">Tool identity</text><text x="10" y="84" class="t-muted" font-size="11">Maker connection</text><text x="10" y="98" class="t-warn" font-size="11" font-weight="600">= acts as maker</text><text x="10" y="120" class="t-muted" font-size="11">End-user conn.</text><text x="10" y="134" class="t-ok" font-size="11" font-weight="600">= acts as user</text></g>
+            </g>
+            <line x1="10" y1="222" x2="880" y2="222" class="s-muted" stroke-width="1.2" marker-end="url(#arr3)"/>
+            <text x="10" y="248" class="t-muted" font-size="12">Request order</text>
+            <text x="890" y="248" text-anchor="end" class="t-muted" font-size="12">Agent acts on data</text>
+          </svg>
+        </div>
+        <div class="legend"><span><i style="background:var(--m365)"></i>Microsoft 365 admin center</span><span><i style="background:var(--entra)"></i>Entra</span><span><i style="background:var(--accent)"></i>Power Platform / Copilot Studio</span><span><i style="background:var(--warn)"></i>Highest-risk choice</span></div>
+        <figcaption><strong>Gate 9 is the one admins most often miss.</strong> An agent whose tools use the maker's connection runs every user's request with the maker's permissions, however tightly gates 1 to 8 are set.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 4. PPAC -->
+    <section id="ppac">
+      <span class="sec-num">04</span>
+      <h2>Power Platform admin center controls</h2>
+      <p class="kicker">These stop oversharing where agents are built. Most need the environment to be a Managed Environment.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Control</th><th>What it does</th><th>What the docs say</th></tr></thead>
+          <tbody>
+            <tr><td>Sharing limits</td><td>Allow or block Editor sharing and Viewer sharing; restrict to individuals only; cap the number of viewers.</td><td>If both are blocked, only admins can grant them. Takes up to an hour to enforce. Applies only to agents that require authentication.</td></tr>
+            <tr><td>Environment-group rules</td><td>Apply sharing limits, connector policies, transcript access, generative AI settings and backup retention across many environments.</td><td>The scalable way to cover every non-default environment.</td></tr>
+            <tr><td>Environment security group</td><td>Limits environment access to group members.</td><td>Separate from sharing. Remove a user from the group to revoke access to everything in the environment.</td></tr>
+            <tr><td>Security roles</td><td>Users need the <code>ChatBotReaders</code> privilege to chat.</td><td>When a System Administrator shares, Environment Maker is assigned automatically, which also grants build rights.</td></tr>
+            <tr><td>Data policies for agents</td><td>Block <span class="mono">Chat without Microsoft Entra ID authentication in Copilot Studio</span>, specific channels, tools and MCP servers, HTTP, skills, event triggers.</td><td>The only control that forces sign-in. Newer Copilot Studio connectors default to the Non-business group.</td></tr>
+            <tr><td>Advanced connector policies</td><td>Govern high-privilege connectors and individual actions.</td><td>Applies to apps, flows and agents in the environment or group.</td></tr>
+            <tr><td>Connected agents</td><td>Allow or block agent-to-agent connections per environment.</td><td>Existing connections stop working when disabled.</td></tr>
+            <tr><td>Quarantine API</td><td>Makes an agent unusable in every channel except maker testing.</td><td>Requires the Global, AI, or Power Platform administrator role and the <code>CopilotStudio.AdminActions.Invoke</code> scope.</td></tr>
+            <tr><td>Inventory</td><td>Lists every agent with its connectors, owner and region. Also available through the inventory API and Azure Resource Graph.</td><td>The AI administrator role sees only agents, agentic apps, agent flows and environments.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Simulator -->
+    <section id="simulator">
+      <span class="sec-num">05</span>
+      <h2>Sharing rules simulator</h2>
+      <p class="kicker">Toggle the four Managed Environment agent sharing rules and see what an owner or editor can still do. Behavior follows the rule table in "Limit sharing" on Microsoft Learn.</p>
+      <figure>
+        <div class="sim">
+          <fieldset>
+            <legend>Rules in the Power Platform admin center</legend>
+            <label class="toggle" for="r-editor"><input type="checkbox" id="r-editor" checked><span>Let people grant <b>Editor</b> permissions<small>Owners and editors can add individual editors.</small></span></label>
+            <label class="toggle" for="r-viewer"><input type="checkbox" id="r-viewer" checked><span>Let people grant <b>Viewer</b> permissions<small>Covers individual viewers and security groups.</small></span></label>
+            <label class="toggle" id="l-indiv" for="r-indiv"><input type="checkbox" id="r-indiv"><span>Only share with individuals (no security groups)<small>Needs Viewer sharing turned on.</small></span></label>
+            <div class="cap"><label for="r-cap">Max viewers per agent</label><input type="number" id="r-cap" min="1" value="10" disabled></div>
+          </fieldset>
+          <div>
+            <p class="sec-num" style="margin:0 0 10px">What makers can do</p>
+            <div class="results" aria-live="polite">
+              <div class="res"><span>Share with an individual as <b>Editor</b></span><span class="v" id="o-editor"></span></div>
+              <div class="res"><span>Share with an individual as <b>Viewer</b></span><span class="v" id="o-iview"></span></div>
+              <div class="res"><span>Share with a <b>security group</b></span><span class="v" id="o-group"></span></div>
+              <div class="res"><span><b>Admins</b> can still grant access</span><span class="v yes">Yes</span></div>
+              <div class="res"><span>Agent set to <b>No authentication</b></span><span class="v unk">Not covered</span></div>
+            </div>
+            <p class="sim-note" id="o-summary"></p>
+          </div>
+        </div>
+        <figcaption><strong>Existing access isn't revoked.</strong> Rules apply to new sharing attempts only. An agent already out of compliance can only be unshared until it complies. Sharing with "Everyone in organization" isn't named explicitly in the rule table, so test it in your tenant before relying on the Viewer rule to block it.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 6. M365 -->
+    <section id="m365">
+      <span class="sec-num">06</span>
+      <h2>Microsoft 365 admin center controls</h2>
+      <p class="kicker">Agent 365 is the control plane for who can find, install and use agents, whichever tool built them. Basic governance is included with Microsoft 365 plans; advanced policy needs Microsoft 365 E7 or an Agent 365 license.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Control</th><th>Where</th><th>What it does</th><th>License</th></tr></thead>
+          <tbody>
+            <tr><td>User access</td><td class="mono">Agents › Settings</td><td>Tenant gate: all users, no users, or specific users or groups can use agents and plugins.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Agent and plugin access</td><td class="mono">Agents › Settings</td><td>Allow agents built by Microsoft, by your org, or by external publishers.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Sharing</td><td class="mono">Agents › Settings</td><td>Who can share Agent Builder agents org-wide.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Availability and deployment</td><td class="mono">Agents › All agents</td><td>Available to, or deployed to: just me, the organization, or specific users or groups.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Publish requests</td><td class="mono">Agents › Requests</td><td>Copilot Studio agents published to the org land here. Publish to a chosen scope, or reject.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Block, delete, reassign owner</td><td class="mono">Agents › All agents</td><td>Blocking a Copilot Studio agent disables it in Copilot, Teams and Outlook.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Agent management rules</td><td class="mono">Agents › Settings</td><td>Bulk rules: block ownerless agents with no usage, reassign ownerless Agent Builder agents, apply templates, reject stale requests.</td><td><span class="pill inc">Included</span></td></tr>
+            <tr><td>Policy templates</td><td class="mono">Agents › Settings</td><td>Preset security policies applied to new or existing agents.</td><td><span class="pill lic">E7 / Agent 365</span></td></tr>
+            <tr><td>Tool and MCP control</td><td class="mono">Agents</td><td>Control which tools, including Microsoft MCP servers, agents can use tenant-wide.</td><td><span class="pill lic">E7 / Agent 365</span></td></tr>
+            <tr><td>Observability and Graph API</td><td class="mono">Agents</td><td>Activity telemetry, and registry and governance actions through Microsoft Graph.</td><td><span class="pill lic">E7 / Agent 365</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. Entra -->
+    <section id="entra">
+      <span class="sec-num">07</span>
+      <h2>Entra Agent ID: the agent's own identity</h2>
+      <p class="kicker">When a maker publishes a Copilot Studio agent, the platform gives it an Entra Agent ID and attaches API permissions for each connector it uses. You can review those permissions in Entra and target them with Conditional Access. Entra Agent ID is in preview.</p>
+      <figure>
+        <div class="scroll-x">
+          <svg viewBox="0 0 900 230" width="100%" style="min-width:640px" role="img" aria-labelledby="ent-t ent-d">
+            <title id="ent-t">Three access patterns for agents</title>
+            <desc id="ent-d">On behalf of a user, Conditional Access targets the user and the agent context. As its own agent identity, policies target the agent identity. As an agent user account, policies target that account; all-users policies do not include agent users.</desc>
+            <g>
+              <rect x="10" y="10" width="280" height="200" rx="10" class="f-surface s-entra" stroke-width="1.5"/>
+              <text x="28" y="40" class="t-entra" font-size="12" font-weight="600" letter-spacing="1">PATTERN A</text>
+              <text x="28" y="64" class="t-ink" font-size="15" font-weight="600">On behalf of a user</text>
+              <text x="28" y="92" class="t-muted" font-size="13">Token carries user + agent</text>
+              <text x="28" y="110" class="t-muted" font-size="13">context. Typical for Copilot</text>
+              <text x="28" y="128" class="t-muted" font-size="13">Studio connectors (OBO).</text>
+              <text x="28" y="170" class="t-ink" font-size="13" font-weight="600">Target: the user, plus the</text>
+              <text x="28" y="188" class="t-ink" font-size="13" font-weight="600">on-behalf-of agent template</text>
+            </g>
+            <g>
+              <rect x="310" y="10" width="280" height="200" rx="10" class="f-surface s-entra" stroke-width="1.5"/>
+              <text x="328" y="40" class="t-entra" font-size="12" font-weight="600" letter-spacing="1">PATTERN B</text>
+              <text x="328" y="64" class="t-ink" font-size="15" font-weight="600">Autonomous agent identity</text>
+              <text x="328" y="92" class="t-muted" font-size="13">Authenticates with its</text>
+              <text x="328" y="110" class="t-muted" font-size="13">blueprint's credentials,</text>
+              <text x="328" y="128" class="t-muted" font-size="13">no user present.</text>
+              <text x="328" y="170" class="t-ink" font-size="13" font-weight="600">Target: the agent identity or</text>
+              <text x="328" y="188" class="t-ink" font-size="13" font-weight="600">custom security attributes</text>
+            </g>
+            <g>
+              <rect x="610" y="10" width="280" height="200" rx="10" class="f-surface s-entra" stroke-width="1.5"/>
+              <text x="628" y="40" class="t-entra" font-size="12" font-weight="600" letter-spacing="1">PATTERN C</text>
+              <text x="628" y="64" class="t-ink" font-size="15" font-weight="600">Agent user account</text>
+              <text x="628" y="92" class="t-muted" font-size="13">Has a mailbox or chat, works</text>
+              <text x="628" y="110" class="t-muted" font-size="13">as a teammate. Excluded from</text>
+              <text x="628" y="128" class="t-warn" font-size="13" font-weight="600">"all users" CA policies.</text>
+              <text x="628" y="170" class="t-ink" font-size="13" font-weight="600">Target: all agent users, or</text>
+              <text x="628" y="188" class="t-ink" font-size="13" font-weight="600">specific agent user accounts</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption><strong>Licensing:</strong> Conditional Access for agents needs Microsoft 365 E7, or Agent 365 with Entra P1 or Microsoft 365 E3. Every agent identity needs a human <strong>sponsor</strong>. If the sponsor leaves, sponsorship moves to their manager. Access packages grant group membership, Graph permissions and roles for a limited time, with expiry reviews.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 8. Retroactive -->
+    <section id="retro">
+      <span class="sec-num">08</span>
+      <h2>New rules don't remove existing access</h2>
+      <p class="kicker">This applies to both the Power Platform sharing limits and the Microsoft 365 Agent Builder sharing setting. It's the most common reason an audit still finds tenant-wide agents after rules are in place.</p>
+      <figure>
+        <div class="scroll-x">
+          <svg viewBox="0 0 900 220" width="100%" style="min-width:640px" role="img" aria-labelledby="ret-t ret-d">
+            <title id="ret-t">Timeline of a sharing rule</title>
+            <desc id="ret-d">An agent shared with everyone before a rule is set stays shared with everyone. After the rule, new sharing attempts are blocked and only unsharing is allowed until the agent complies.</desc>
+            <line x1="40" y1="110" x2="870" y2="110" class="s-muted" stroke-width="2"/>
+            <circle cx="140" cy="110" r="9" class="f-ok"/>
+            <text x="140" y="84" text-anchor="middle" class="t-ink" font-size="13.5" font-weight="600">Agent shared with Everyone</text>
+            <text x="140" y="142" text-anchor="middle" class="t-muted" font-size="12.5">Before any rule</text>
+            <rect x="380" y="70" width="4" height="80" class="f-pp"/>
+            <text x="382" y="58" text-anchor="middle" class="t-pp" font-size="13.5" font-weight="600">Sharing rule applied</text>
+            <text x="382" y="172" text-anchor="middle" class="t-muted" font-size="12.5">Up to 1 hour to enforce</text>
+            <rect x="430" y="92" width="200" height="36" rx="18" class="f-warn-soft"/>
+            <text x="530" y="115" text-anchor="middle" class="t-warn" font-size="13" font-weight="600">Everyone still has access</text>
+            <rect x="650" y="92" width="210" height="36" rx="18" class="f-pp-soft"/>
+            <text x="755" y="115" text-anchor="middle" class="t-pp" font-size="13" font-weight="600">New shares blocked · unshare only</text>
+            <text x="755" y="160" text-anchor="middle" class="t-ink" font-size="12.5" font-weight="600">Fix: unshare by hand, or quarantine</text>
+            <text x="755" y="178" text-anchor="middle" class="t-muted" font-size="12.5">then the agent becomes compliant</text>
+          </svg>
+        </div>
+        <figcaption><strong>Order of operations for cleanup:</strong> find overshared agents in the inventory, unshare or quarantine them, then turn on the rules so it can't happen again.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 9. Gotchas -->
+    <section id="gotchas">
+      <span class="sec-num">09</span>
+      <h2>Gotchas the docs call out</h2>
+      <ul class="gotchas">
+        <li><b>Unauthenticated agents bypass sharing</b><p>With No authentication, anyone with the link can chat, and sharing limits don't apply. Block the "Chat without Microsoft Entra ID authentication" connector in a data policy.</p><span class="src pill pp">Power Platform</span></li>
+        <li><b>"Everyone" includes guests</b><p>The Everyone group contains every account that has ever signed in, guests included, and its membership can't be viewed or edited. Share with a security group instead.</p><span class="src pill pp">Power Platform</span></li>
+        <li><b>The default environment can't have a security group</b><p>Gate 4 doesn't exist there. Use sharing limits, data policies and environment routing to move makers out.</p><span class="src pill pp">Power Platform</span></li>
+        <li><b>Sharing quietly grants maker rights</b><p>A System Administrator sharing an agent assigns Environment Maker to people who lack the ChatBotReaders privilege, which also lets them build agents.</p><span class="src pill pp">Power Platform</span></li>
+        <li><b>Owners can't be removed by other sharers</b><p>Owners always keep access. To cut off an owner, reassign ownership or block the agent.</p><span class="src pill m365">Microsoft 365</span></li>
+        <li><b>IP firewall can block M365 admin actions</b><p>In active enforcement mode, block or reassign from the M365 admin center fails. Run it through the Power Platform API instead.</p><span class="src pill m365">Microsoft 365</span></li>
+        <li><b>Blocking scope depends on the builder</b><p>Blocking a Copilot Studio or Agent Builder agent affects Copilot, Teams and Outlook. Blocking a SharePoint or Foundry agent affects Copilot Chat only.</p><span class="src pill m365">Microsoft 365</span></li>
+        <li><b>Agent users skip "all users" policies</b><p>Conditional Access policies that target all users don't include agent user accounts, and group-based targeting isn't supported for them.</p><span class="src pill entra">Entra</span></li>
+      </ul>
+      <div class="key warnbox"><strong>Archived pages:</strong> several 2024–2025 release-plan pages about sharing limits were archived in October 2026. Rely on the product docs listed under Sources, not release plans.</div>
+    </section>
+
+    <!-- 10. Zones -->
+    <section id="zones">
+      <span class="sec-num">10</span>
+      <h2>Zoned operating model</h2>
+      <p class="kicker">Microsoft's Copilot Studio governance guidance recommends strict rules where anyone can build and relaxed rules after review. This model adds the sharing settings for each zone.</p>
+      <figure>
+        <div class="scroll-x">
+          <svg viewBox="0 0 900 300" width="100%" style="min-width:680px" role="img" aria-labelledby="zone-t zone-d">
+            <title id="zone-t">Sharing strictness by zone</title>
+            <desc id="zone-d">Four zones from strictest to most open: admin-only, personal and default, team development, and production. Each step shows its sharing setting.</desc>
+            <text x="10" y="22" class="t-muted" font-size="12" font-weight="600" letter-spacing="1">SHARING REACH →</text>
+            <!-- bars: height encodes reach; baseline at y=250 -->
+            <g>
+              <rect x="20" y="210" width="190" height="40" rx="6" class="f-warn-soft"/>
+              <text x="34" y="235" class="t-warn" font-size="13" font-weight="600">Owner only</text>
+              <text x="20" y="272" class="t-ink" font-size="14" font-weight="600">Admin-only</text>
+              <text x="20" y="290" class="t-muted" font-size="12">e.g. PowerClippy Admin</text>
+            </g>
+            <g>
+              <rect x="240" y="170" width="190" height="80" rx="6" class="f-entra-soft"/>
+              <text x="254" y="195" class="t-entra" font-size="13" font-weight="600">Admins share only</text>
+              <text x="254" y="214" class="t-muted" font-size="12">Editor off · Viewer off</text>
+              <text x="240" y="272" class="t-ink" font-size="14" font-weight="600">Personal / default</text>
+              <text x="240" y="290" class="t-muted" font-size="12">Anyone can build</text>
+            </g>
+            <g>
+              <rect x="460" y="120" width="190" height="130" rx="6" class="f-m365-soft"/>
+              <text x="474" y="145" class="t-m365" font-size="13" font-weight="600">Individuals only</text>
+              <text x="474" y="164" class="t-muted" font-size="12">No groups · ~10 viewers</text>
+              <text x="474" y="182" class="t-muted" font-size="12">Editors to named people</text>
+              <text x="460" y="272" class="t-ink" font-size="14" font-weight="600">Team development</text>
+              <text x="460" y="290" class="t-muted" font-size="12">Env security group</text>
+            </g>
+            <g>
+              <rect x="680" y="50" width="200" height="200" rx="6" class="f-pp-soft"/>
+              <text x="694" y="75" class="t-pp" font-size="13" font-weight="600">Security groups</text>
+              <text x="694" y="94" class="t-muted" font-size="12">Viewer to groups only</text>
+              <text x="694" y="112" class="t-muted" font-size="12">Released through M365</text>
+              <text x="694" y="130" class="t-muted" font-size="12">Requests with a scope</text>
+              <text x="694" y="148" class="t-muted" font-size="12">Never "Everyone"</text>
+              <text x="680" y="272" class="t-ink" font-size="14" font-weight="600">Production</text>
+              <text x="680" y="290" class="t-muted" font-size="12">Pipelines · ACP · env SG</text>
+            </g>
+            <line x1="10" y1="250" x2="890" y2="250" class="s-line" stroke-width="1"/>
+          </svg>
+        </div>
+        <figcaption><strong>Every zone</strong> requires Entra sign-in (enforced by DLP), end-user connections for high-privilege tools, and an owner plus a sponsor or backup owner. Bar height shows relative reach, not a measured value.</figcaption>
+      </figure>
+    </section>
+
+    <!-- 11. Runbook -->
+    <section id="runbook">
+      <span class="sec-num">11</span>
+      <h2>Runbook</h2>
+      <p class="kicker">Do these in order. Cleanup comes before rules because rules don't remove existing access.</p>
+      <ol class="steps">
+        <li><div><b>Inventory.</b> Open Power Platform admin center › Manage › Inventory, filtered to agents. Export it. Flag agents shared with Everyone, agents with no authentication, and agents whose tools use maker connections.</div></li>
+        <li><div><b>Contain.</b> Unshare overshared agents, or quarantine them with <code>pac copilot-studio set-bot-as-quarantined</code> while you talk to the owner.</div></li>
+        <li><div><b>Force sign-in tenant-wide.</b> In a tenant data policy, block <span class="mono">Chat without Microsoft Entra ID authentication in Copilot Studio</span> and <span class="mono">Direct Line channels in Copilot Studio</span> where they aren't needed.</div></li>
+        <li><div><b>Make environments managed and add sharing rules.</b> Default and personal environments: Editor and Viewer sharing off. Team environments: individuals only, with a viewer cap. Apply them through environment-group rules.</div></li>
+        <li><div><b>Gate distribution in Microsoft 365.</b> Set Agents › Settings › Sharing to specific users, set User access to licensed groups, and approve every Copilot Studio publish request with a scoped audience.</div></li>
+        <li><div><b>Automate lifecycle.</b> Add management rules: block ownerless agents with no usage, and reject publish requests older than 30 days.</div></li>
+        <li><div><b>Identity layer (if you have E7 or Agent 365).</b> Assign sponsors, apply the block-high-risk-agent Conditional Access template, and review the Entra permissions attached to each agent.</div></li>
+        <li><div><b>Review monthly.</b> Check the inventory, the Requests list, the ownerless-agents card and the Security Dashboard for AI.</div></li>
+      </ol>
+    </section>
+
+    <!-- 12. Sources -->
+    <section id="sources">
+      <span class="sec-num">12</span>
+      <h2>Sources</h2>
+      <ul class="sources">
+        <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/admin-sharing-controls-limits">Control how agents are shared</a></li>
+        <li><a href="https://learn.microsoft.com/power-platform/admin/managed-environment-sharing-limits">Limit sharing (Managed Environments)</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/admin-share-bots">Share agents with other users</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/configuration-end-user-authentication">Configure user authentication</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/admin-data-loss-prevention">Configure data policies for agents</a></li>
+        <li><a href="https://learn.microsoft.com/power-platform/admin/environment-groups-rules">Rules for environment groups</a></li>
+        <li><a href="https://learn.microsoft.com/power-platform/admin/power-platform-inventory">Power Platform inventory</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/admin-api-quarantine">Quarantine agents with the Power Platform API</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-agent-365/admin/agent-settings">Agent settings in the Microsoft 365 admin center</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-agent-365/admin/agent-actions">Governance and lifecycle actions for agents</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-365/copilot/extensibility/agent-builder-share-manage-agents">Share and manage Agent Builder agents</a></li>
+        <li><a href="https://learn.microsoft.com/office365/servicedescriptions/microsoft-agent-365/microsoft-agent-365">Microsoft Agent 365 service description</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-agent-365/builder/identity">Agent identity integration for Copilot Studio</a></li>
+        <li><a href="https://learn.microsoft.com/entra/identity/conditional-access/agent-id">Conditional Access for agents</a></li>
+        <li><a href="https://learn.microsoft.com/entra/id-governance/identity-governance-overview">Identity governance for agents</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-365/admin/manage/apps/security-compliance?view=o365-worldwide">Copilot Managed Runtime security and compliance</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-365/managed-apps/developer/architecture?view=o365-worldwide">Copilot Managed Runtime architecture</a></li>
+        <li><a href="https://learn.microsoft.com/power-platform/guidance/adoption/secure-default-environment">Secure the default environment</a></li>
+        <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/guidance/sec-gov-phase3">Secure your Copilot Studio projects</a></li>
+      </ul>
+      <footer>Compiled from Microsoft Learn in late October 2026. Preview features (Entra Agent ID, Copilot Managed Runtime, connector inventory) can change; check the linked pages before you rely on a detail.</footer>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var ed = document.getElementById('r-editor');
+  var vw = document.getElementById('r-viewer');
+  var ind = document.getElementById('r-indiv');
+  var cap = document.getElementById('r-cap');
+  var lInd = document.getElementById('l-indiv');
+  function set(id, ok, text) {
+    var el = document.getElementById(id);
+    el.className = 'v ' + (ok ? 'yes' : 'no');
+    el.textContent = text || (ok ? 'Allowed' : 'Blocked');
+  }
+  function update() {
+    ind.disabled = !vw.checked;
+    if (!vw.checked) ind.checked = false;
+    lInd.classList.toggle('disabled', !vw.checked);
+    cap.disabled = !(vw.checked && ind.checked);
+    var n = parseInt(cap.value, 10);
+    set('o-editor', ed.checked);
+    set('o-iview', vw.checked, vw.checked ? (ind.checked && n > 0 ? 'Up to ' + n : 'Allowed') : 'Blocked');
+    set('o-group', vw.checked && !ind.checked);
+    var s;
+    if (!ed.checked && !vw.checked) s = 'Lockdown: makers can’t share at all. Only admins can grant Editor or Viewer access. Recommended for default and personal environments.';
+    else if (vw.checked && ind.checked) s = 'Contained: viewers are named individuals' + (n > 0 ? ' (at most ' + n + ' per agent)' : '') + ', with no group sharing. Suits team development.';
+    else if (vw.checked) s = 'Open: makers can share with any individual or security group. Suits production only if releases go through approval.';
+    else s = 'Editors only: makers can add co-authors but can’t give chat-only access.';
+    document.getElementById('o-summary').textContent = s;
+  }
+  [ed, vw, ind, cap].forEach(function (el) { el.addEventListener('input', update); el.addEventListener('change', update); });
+  update();
+})();
+</script>
+
+</body></html>
