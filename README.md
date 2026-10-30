@@ -4,7 +4,7 @@
 
 It can't change anything. Every tool is a read operation, it runs with **your own sign-in** (no service account), and only members of one security group can open it.
 
-**New here?** Read [Prerequisites](docs/PREREQUISITES.md) → [Installation](docs/INSTALLATION.md) → [Permissions guide](docs/PERMISSIONS-GUIDE.md). Questions: [FAQ](docs/FAQ.md).
+**New here?** Read [Prerequisites](PREREQUISITES.md) → [Installation](INSTALLATION.md) → [Permissions guide](PERMISSIONS-GUIDE.md). Questions: [FAQ](FAQ.md).
 
 ---
 
